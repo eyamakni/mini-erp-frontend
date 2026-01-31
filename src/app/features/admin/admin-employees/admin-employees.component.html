@@ -1,0 +1,172 @@
+<div class="container-fluid p-3 p-lg-4">
+  <!-- Header -->
+  <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3">
+    <div>
+      <h3 class="mb-1">Employees</h3>
+      <div class="text-muted">Liste, recherche et gestion des comptes employés</div>
+    </div>
+
+    <div class="d-flex gap-2">
+      <a class="btn btn-primary" routerLink="/admin/employees/new">
+        <i class="bi bi-person-plus"></i>
+        Create
+      </a>
+      <a class="btn btn-outline-secondary" routerLink="/admin/dashboard">
+        <i class="bi bi-arrow-left"></i>
+        Dashboard
+      </a>
+    </div>
+  </div>
+
+  <!-- Error -->
+  <div *ngIf="error" class="alert alert-danger d-flex align-items-center justify-content-between">
+    <div>
+      <i class="bi bi-exclamation-triangle me-2"></i>
+      {{ error }}
+    </div>
+    <button class="btn btn-light btn-sm" (click)="error=null">OK</button>
+  </div>
+
+  <!-- Filters -->
+  <div class="card shadow-sm mb-3">
+    <div class="card-body">
+      <div class="row g-2">
+        <div class="col-12 col-md-6 col-lg-5">
+          <label class="form-label">Recherche</label>
+          <div class="input-group">
+            <span class="input-group-text"><i class="bi bi-search"></i></span>
+            <input class="form-control" [(ngModel)]="q" placeholder="email, prénom, nom..." />
+          </div>
+        </div>
+
+        <div class="col-12 col-md-6 col-lg-4">
+          <label class="form-label">Position</label>
+          <select class="form-select" [(ngModel)]="position">
+            <option value="">Toutes</option>
+            <option *ngFor="let p of positions" [value]="p">{{ p }}</option>
+          </select>
+        </div>
+
+        <div class="col-12 col-lg-3 d-flex align-items-end gap-2">
+          <button class="btn btn-outline-primary w-100" (click)="applyFilters()">
+            <i class="bi bi-funnel"></i> Filtrer
+          </button>
+          <button class="btn btn-outline-secondary w-100" (click)="clearFilters()">
+            <i class="bi bi-x-circle"></i> Reset
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Table -->
+  <div class="card shadow-sm">
+    <div class="card-body">
+      <div *ngIf="loading" class="py-4 d-flex align-items-center gap-2">
+        <div class="spinner-border" role="status"></div>
+        <span>Chargement...</span>
+      </div>
+
+      <div *ngIf="!loading && employees.length === 0" class="text-muted py-4">
+        Aucun employé trouvé.
+      </div>
+
+      <div class="table-responsive" *ngIf="!loading && employees.length > 0">
+        <table class="table align-middle table-hover">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Nom</th>
+              <th>Email pro</th>
+              <th>Position</th>
+              <th>Status</th>
+              <th class="text-end">Actions</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr *ngFor="let e of employees">
+              <td class="text-muted">#{{ e.id }}</td>
+              <td class="fw-semibold">{{ e.firstName }} {{ e.lastName }}</td>
+              <td class="text-muted">{{ e.email }}</td>
+
+              <td>
+                <span class="badge text-bg-light">{{ e.position || '—' }}</span>
+              </td>
+
+              <td>
+                <span class="badge" [ngClass]="badgeClass(e.isActive)">
+                  {{ e.isActive ? 'ACTIVE' : 'DISABLED' }}
+                </span>
+              </td>
+
+              <td class="text-end">
+                <button
+                  *ngIf="!e.isActive"
+                  class="btn btn-outline-success btn-sm me-2"
+                  [disabled]="actionLoading"
+                  (click)="enable(e)">
+                  <i class="bi bi-check2-circle"></i> Enable
+                </button>
+
+                <button
+                  *ngIf="e.isActive"
+                  class="btn btn-outline-danger btn-sm"
+                  [disabled]="actionLoading"
+                  (click)="openDisable(e)">
+                  <i class="bi bi-slash-circle"></i> Disable
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="small text-muted mt-2" *ngIf="!loading">
+        Total: {{ employees.length }} employé(s)
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal disable -->
+<div class="modal-backdrop-custom" *ngIf="modalOpen">
+  <div class="modal-card shadow">
+    <div class="modal-head">
+      <div class="fw-bold">
+        <i class="bi bi-slash-circle text-danger me-2"></i>
+        Désactiver l’employé
+      </div>
+      <button class="btn btn-sm btn-light" (click)="closeDisable()">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+
+    <div class="modal-body">
+      <div class="mb-2 text-muted small">
+        Employé : <b>{{ disablingEmployee?.firstName }} {{ disablingEmployee?.lastName }}</b>
+      </div>
+
+      <label class="form-label">Raison</label>
+      <textarea
+        class="form-control"
+        rows="3"
+        [(ngModel)]="disableReason"
+        placeholder="Ex: Fin de contrat, compte compromis..."
+      ></textarea>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn btn-outline-secondary" (click)="closeDisable()" [disabled]="actionLoading">
+        Annuler
+      </button>
+      <button class="btn btn-danger" (click)="confirmDisable()" [disabled]="actionLoading">
+        <span *ngIf="!actionLoading">Confirmer</span>
+        <span *ngIf="actionLoading" class="d-inline-flex align-items-center gap-2">
+          <span class="spinner-border spinner-border-sm"></span>
+          Processing...
+        </span>
+      </button>
+    </div>
+  </div>
+</div>

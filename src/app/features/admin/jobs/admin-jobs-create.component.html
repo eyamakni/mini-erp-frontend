@@ -1,0 +1,162 @@
+<div class="container-fluid p-3 p-lg-4">
+  <!-- HEADER -->
+  <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3">
+    <div>
+      <h3 class="mb-1">Create Job Offer</h3>
+      <div class="text-muted">
+        Créer une nouvelle offre d’emploi
+      </div>
+    </div>
+
+    <a routerLink="/admin/jobs" class="btn btn-outline-secondary">
+      <i class="bi bi-arrow-left me-1"></i>
+      Back to list
+    </a>
+  </div>
+
+  <!-- ERROR -->
+  <div
+    *ngIf="error"
+    class="alert alert-danger d-flex justify-content-between align-items-center"
+  >
+    <div>
+      <i class="bi bi-exclamation-triangle me-2"></i>
+      {{ error }}
+    </div>
+    <button class="btn btn-light btn-sm" (click)="error = null">
+      OK
+    </button>
+  </div>
+
+  <!-- FORM -->
+  <div class="card shadow-sm">
+    <div class="card-body">
+      <form [formGroup]="form" (ngSubmit)="submit()">
+        <div class="row g-3">
+
+          <!-- POSITION -->
+          <div class="col-12">
+            <label class="form-label">Position *</label>
+            <input
+              type="text"
+              class="form-control"
+              formControlName="position"
+              placeholder="Ex: Frontend Developer"
+            />
+            <div
+              class="text-danger small"
+              *ngIf="
+                form.get('position')?.touched &&
+                form.get('position')?.invalid
+              "
+            >
+              Position is required
+            </div>
+          </div>
+
+          <!-- CONTRACT TYPE -->
+          <div class="col-12 col-md-6">
+            <label class="form-label">Contract Type *</label>
+            <select class="form-select" formControlName="contractType">
+              <option value="">Select contract type</option>
+              <option *ngFor="let t of types" [value]="t">
+                {{ t }}
+              </option>
+            </select>
+            <div
+              class="text-danger small"
+              *ngIf="
+                form.get('contractType')?.touched &&
+                form.get('contractType')?.invalid
+              "
+            >
+              Contract type is required
+            </div>
+          </div>
+
+          <!-- DEADLINE -->
+          <div class="col-12 col-md-6">
+            <label class="form-label">Deadline</label>
+            <input
+              type="date"
+              class="form-control"
+              formControlName="deadline"
+            />
+          </div>
+
+          <!-- DESCRIPTION -->
+          <div class="col-12">
+            <label class="form-label">Description *</label>
+            <textarea
+              rows="4"
+              class="form-control"
+              formControlName="description"
+              placeholder="Describe the job role, responsibilities, environment..."
+            ></textarea>
+            <div
+              class="text-danger small"
+              *ngIf="
+                form.get('description')?.touched &&
+                form.get('description')?.invalid
+              "
+            >
+              Description is required (minimum 10 characters)
+            </div>
+          </div>
+
+          <!-- REQUIRED SKILLS -->
+          <div class="col-12">
+            <label class="form-label">Required Skills *</label>
+            <textarea
+              rows="3"
+              class="form-control"
+              formControlName="requiredSkills"
+              placeholder="Ex: Angular, TypeScript, REST APIs"
+            ></textarea>
+            <div
+              class="text-danger small"
+              *ngIf="
+                form.get('requiredSkills')?.touched &&
+                form.get('requiredSkills')?.invalid
+              "
+            >
+              Required skills are mandatory
+            </div>
+          </div>
+        </div>
+
+        <!-- ACTIONS -->
+        <div class="d-flex justify-content-end gap-2 mt-4">
+          <button
+            type="button"
+            class="btn btn-outline-secondary"
+            (click)="cancel()"
+            [disabled]="loading"
+          >
+            Cancel
+          </button>
+
+          <button
+            type="submit"
+            class="btn btn-primary"
+            [disabled]="loading"
+          >
+            <span *ngIf="!loading">
+              <i class="bi bi-check-circle me-1"></i>
+              Create Offer
+            </span>
+
+            <span
+              *ngIf="loading"
+              class="d-inline-flex align-items-center gap-2"
+            >
+              <span class="spinner-border spinner-border-sm"></span>
+              Saving...
+            </span>
+          </button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+</div>

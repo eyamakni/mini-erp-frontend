@@ -1,0 +1,109 @@
+<div class="container-fluid p-3 p-lg-4">
+  <a routerLink="/admin/leaves" class="btn btn-outline-secondary mb-3">
+    <i class="bi bi-arrow-left"></i> Back to list
+  </a>
+
+  <div *ngIf="loading" class="py-4">Chargement...</div>
+
+  <div *ngIf="error" class="alert alert-danger">
+    {{ error }}
+  </div>
+
+  <div *ngIf="!loading && leave" class="card shadow-sm">
+    <div class="card-header d-flex justify-content-between align-items-center">
+      <div>
+        <h5 class="mb-0">Leave Request #{{ leave.id }}</h5>
+        <div class="text-muted small">
+          Created at {{ leave.createdAt | date:'medium' }}
+        </div>
+      </div>
+
+      <span class="badge" [ngClass]="badgeClass(leave.status)">
+        {{ leave.status }}
+      </span>
+    </div>
+
+    <div class="card-body">
+      <div class="row g-3">
+        <div class="col-md-6">
+          <h6>Employee</h6>
+          <p class="mb-1">
+            <b>{{ leave.employee.firstName }} {{ leave.employee.lastName }}</b>
+          </p>
+          <div class="text-muted small">{{ leave.employee.email }}</div>
+        </div>
+
+        <div class="col-md-6">
+          <h6>Leave info</h6>
+          <div>Type: <b>{{ leave.type }}</b></div>
+          <div>
+            Period:
+            <b>{{ leave.startDate }} → {{ leave.endDate }}</b>
+          </div>
+          <div>Days: <b>{{ leave.days }}</b></div>
+        </div>
+
+        <div class="col-12">
+          <h6>Reason</h6>
+          <div class="border rounded p-2 bg-light">
+            {{ leave.reason || '—' }}
+          </div>
+        </div>
+        <!-- ADMIN DECISION -->
+<div class="mt-4" *ngIf="leave.status === 'PENDING' && !decisionDone">
+  <h6>Admin decision</h6>
+
+  <label class="form-label">Comment (optional)</label>
+  <textarea
+    class="form-control mb-3"
+    rows="3"
+    [(ngModel)]="comment"
+    placeholder="Commentaire admin..."
+  ></textarea>
+
+  <div class="d-flex gap-2">
+    <button
+      class="btn btn-success"
+      (click)="approve()"
+      [disabled]="decisionLoading">
+      <i class="bi bi-check-circle"></i>
+      Approve
+    </button>
+
+    <button
+      class="btn btn-danger"
+      (click)="reject()"
+      [disabled]="decisionLoading">
+      <i class="bi bi-x-circle"></i>
+      Reject
+    </button>
+  </div>
+</div>
+
+
+        <div class="col-12" *ngIf="leave.adminComment">
+          <h6>Admin comment</h6>
+          <div class="border rounded p-2 bg-light">
+            {{ leave.adminComment }}
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- APPROVED ANIMATION -->
+<div *ngIf="decisionDone === 'APPROVED'" class="decision-overlay approved">
+  <div class="decision-box">
+    <i class="bi bi-check-circle-fill"></i>
+    <div>APPROVED</div>
+  </div>
+</div>
+
+<!-- REJECTED ANIMATION -->
+<div *ngIf="decisionDone === 'REJECTED'" class="decision-overlay rejected">
+  <div class="decision-box">
+    <i class="bi bi-x-circle-fill"></i>
+    <div>REJECTED</div>
+  </div>
+</div>
+
+  </div>
+</div>

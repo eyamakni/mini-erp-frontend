@@ -1,0 +1,128 @@
+<div class="container-fluid p-3 p-lg-4">
+
+  <!-- HEADER -->
+  <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3">
+    <div>
+      <h3 class="mb-1">Job Applications</h3>
+      <div class="text-muted">
+        Gestion des candidatures reçues
+      </div>
+    </div>
+
+    <a routerLink="/admin/dashboard" class="btn btn-outline-secondary">
+      <i class="bi bi-arrow-left me-1"></i>
+      Dashboard
+    </a>
+  </div>
+
+  <!-- ERROR -->
+  <div *ngIf="error" class="alert alert-danger d-flex justify-content-between">
+    <div>
+      <i class="bi bi-exclamation-triangle me-2"></i>
+      {{ error }}
+    </div>
+    <button class="btn btn-light btn-sm" (click)="error=null">OK</button>
+  </div>
+
+  <!-- FILTERS -->
+  <div class="card shadow-sm mb-3">
+    <div class="card-body">
+      <div class="row g-2 align-items-end">
+        <div class="col-12 col-md-4">
+          <label class="form-label">Status</label>
+          <select class="form-select" [(ngModel)]="status">
+            <option value="">Tous</option>
+            <option *ngFor="let s of statuses" [value]="s">
+              {{ s }}
+            </option>
+          </select>
+        </div>
+
+        <div class="col-6 col-md-3">
+          <label class="form-label">From</label>
+          <input type="date" class="form-control" [(ngModel)]="from" />
+        </div>
+
+        <div class="col-6 col-md-3">
+          <label class="form-label">To</label>
+          <input type="date" class="form-control" [(ngModel)]="to" />
+        </div>
+
+        <div class="col-12 col-md-2 d-flex gap-2">
+          <button class="btn btn-outline-primary w-100" (click)="load()">
+            <i class="bi bi-funnel"></i>
+          </button>
+          <button class="btn btn-outline-secondary w-100" (click)="clearFilters()">
+            <i class="bi bi-x-circle"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LOADING -->
+  <div *ngIf="loading" class="py-4 d-flex align-items-center gap-2">
+    <div class="spinner-border"></div>
+    <span>Chargement...</span>
+  </div>
+
+  <!-- EMPTY -->
+  <div *ngIf="!loading && applications.length === 0" class="text-muted py-4">
+    Aucune candidature trouvée.
+  </div>
+
+  <!-- TABLE -->
+  <div class="card shadow-sm" *ngIf="!loading && applications.length > 0">
+    <div class="card-body table-responsive">
+      <table class="table table-hover align-middle">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Candidat</th>
+            <th>Email</th>
+            <th>Job</th>
+            <th>Status</th>
+            <th>Date</th>
+            <th class="text-end">Action</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr *ngFor="let a of applications">
+            <td class="text-muted">#{{ a.id }}</td>
+
+            <td class="fw-semibold">
+              {{ a.firstName }} {{ a.lastName }}
+            </td>
+
+            <td>{{ a.email }}</td>
+
+            <td>{{ a.jobOffer.position }}</td>
+
+            <td>
+              <span class="badge" [ngClass]="badgeClass(a.status)">
+                {{ a.status }}
+              </span>
+            </td>
+
+            <td class="text-muted">
+              {{ a.createdAt | date:'short' }}
+            </td>
+
+            <td class="text-end">
+              <a
+                class="btn btn-outline-primary btn-sm"
+                [routerLink]="['/admin/applications', a.id]">
+                View
+              </a>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="small text-muted mt-2">
+        Total: {{ applications.length }} candidature(s)
+      </div>
+    </div>
+  </div>
+</div>

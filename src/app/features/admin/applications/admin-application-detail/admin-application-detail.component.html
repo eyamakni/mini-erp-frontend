@@ -1,0 +1,153 @@
+<div class="container-fluid p-3 p-lg-4" *ngIf="!loading && application">
+
+  <!-- HEADER -->
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <div>
+      <h3 class="mb-1">
+        Application #{{ application.id }}
+      </h3>
+      <div class="text-muted">
+        {{ application.firstName }} {{ application.lastName }} –
+        <span class="fw-semibold">{{ application.jobOffer.position }}</span>
+      </div>
+    </div>
+
+    <a routerLink="/admin/applications" class="btn btn-outline-secondary">
+      <i class="bi bi-arrow-left"></i> Back
+    </a>
+  </div>
+
+  <!-- ERROR -->
+  <div *ngIf="error" class="alert alert-danger">
+    <i class="bi bi-exclamation-triangle me-2"></i>
+    {{ error }}
+  </div>
+
+  <!-- INFO CARD -->
+  <div class="card shadow-sm mb-3">
+    <div class="card-body row g-3">
+
+      <div class="col-md-6">
+        <div class="fw-semibold">Email</div>
+        <div class="text-muted">{{ application.email }}</div>
+      </div>
+
+      <div class="col-md-6">
+        <div class="fw-semibold">Phone</div>
+        <div class="text-muted">{{ application.phone || '—' }}</div>
+      </div>
+
+      <div class="col-md-6">
+        <div class="fw-semibold">Status</div>
+        <span class="badge bg-primary">{{ application.status }}</span>
+      </div>
+
+      <div class="col-md-6">
+        <div class="fw-semibold">Date</div>
+        <div class="text-muted">
+          {{ application.createdAt | date:'medium' }}
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- MESSAGE -->
+  <div class="card shadow-sm mb-3" *ngIf="application.message">
+    <div class="card-header fw-semibold">
+      Message du candidat
+    </div>
+    <div class="card-body">
+      {{ application.message }}
+    </div>
+  </div>
+
+  <!-- CV -->
+  <div class="card shadow-sm mb-3">
+    <div class="card-body d-flex justify-content-between align-items-center">
+      <div>
+        <i class="bi bi-file-earmark-pdf text-danger me-2"></i>
+        CV du candidat
+      </div>
+      <a
+        class="btn btn-outline-primary btn-sm"
+        [href]="application.cvPath"
+        target="_blank">
+        Ouvrir PDF
+      </a>
+    </div>
+  </div>
+
+  <!-- DECISION -->
+  <div class="card shadow-sm">
+    <div class="card-header fw-semibold">
+      Décision admin
+    </div>
+
+    <div class="card-body">
+
+      <!-- STATUS -->
+      <div class="mb-3">
+        <label class="form-label">Statut</label>
+        <select class="form-select" [(ngModel)]="status">
+          <option *ngFor="let s of statuses" [value]="s">
+            {{ s }}
+          </option>
+        </select>
+      </div>
+
+      <!-- NOTES -->
+      <div class="mb-3">
+        <label class="form-label">Notes admin</label>
+        <textarea
+          rows="3"
+          class="form-control"
+          [(ngModel)]="adminNotes"
+          placeholder="Notes internes (optionnel)">
+        </textarea>
+      </div>
+
+      <!-- ACTIONS -->
+      <div class="d-flex justify-content-end gap-2">
+        <button
+          class="btn btn-outline-secondary"
+          [disabled]="saving"
+          routerLink="/admin/applications">
+          Cancel
+        </button>
+
+        <button
+          class="btn btn-primary"
+          (click)="save()"
+          [disabled]="saving">
+          <span *ngIf="!saving">
+            <i class="bi bi-check-circle me-1"></i>
+            Save
+          </span>
+
+          <span *ngIf="saving">
+            <span class="spinner-border spinner-border-sm me-2"></span>
+            Saving...
+          </span>
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<!-- APPROVED / REJECTED ANIMATION -->
+<div *ngIf="decisionDone === 'HIRED'" class="decision-overlay approved">
+  <div class="decision-box">
+    <i class="bi bi-check-circle-fill"></i>
+    <div>HIRED</div>
+  </div>
+</div>
+
+<div *ngIf="decisionDone === 'REJECTED'" class="decision-overlay rejected">
+  <div class="decision-box">
+    <i class="bi bi-x-circle-fill"></i>
+    <div>REJECTED</div>
+  </div>
+</div>

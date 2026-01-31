@@ -1,0 +1,68 @@
+<div class="container-fluid p-3 p-lg-4">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <div>
+      <h3>Leave Requests</h3>
+      <div class="text-muted">Gestion des demandes de congé</div>
+    </div>
+
+    <a routerLink="/admin/dashboard" class="btn btn-outline-secondary">
+      <i class="bi bi-arrow-left"></i> Dashboard
+    </a>
+  </div>
+
+  <!-- Status tabs -->
+  <div class="btn-group mb-3">
+    <button
+      *ngFor="let s of statuses"
+      class="btn"
+      [ngClass]="status === s ? 'btn-primary' : 'btn-outline-primary'"
+      (click)="changeStatus(s)">
+      {{ s }}
+    </button>
+  </div>
+
+  <div *ngIf="loading" class="py-4">Chargement...</div>
+
+  <div *ngIf="!loading && leaves.length === 0" class="text-muted py-4">
+    Aucun congé trouvé.
+  </div>
+
+  <div class="table-responsive" *ngIf="!loading && leaves.length > 0">
+    <table class="table align-middle table-hover">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Employé</th>
+          <th>Type</th>
+          <th>Période</th>
+          <th>Status</th>
+          <th></th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr *ngFor="let l of leaves">
+          <td>#{{ l.id }}</td>
+          <td>
+            <b>{{ l.employee.firstName }} {{ l.employee.lastName }}</b><br />
+            <span class="text-muted small">{{ l.employee.email }}</span>
+          </td>
+          <td>{{ l.type }}</td>
+          <td>{{ l.startDate }} → {{ l.endDate }}</td>
+          <td>
+            <span class="badge" [ngClass]="badgeClass(l.status)">
+              {{ l.status }}
+            </span>
+          </td>
+          <td class="text-end">
+            <a
+              class="btn btn-sm btn-outline-primary"
+              [routerLink]="['/admin/leaves', l.id]">
+              View
+            </a>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

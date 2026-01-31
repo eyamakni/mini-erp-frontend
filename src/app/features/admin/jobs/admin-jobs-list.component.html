@@ -1,0 +1,119 @@
+<div class="container-fluid p-3 p-lg-4">
+  <!-- HEADER -->
+  <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3">
+    <div>
+      <h3 class="mb-1">Job Offers</h3>
+      <div class="text-muted">
+        Gestion des offres d’emploi publiées
+      </div>
+    </div>
+
+    <div class="d-flex gap-2">
+      <a routerLink="/admin/jobs/new" class="btn btn-primary">
+        <i class="bi bi-plus-circle me-1"></i>
+        New Offer
+      </a>
+
+      <a routerLink="/admin/dashboard" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left me-1"></i>
+        Dashboard
+      </a>
+    </div>
+  </div>
+
+  <!-- ERROR -->
+  <div *ngIf="error" class="alert alert-danger d-flex justify-content-between align-items-center">
+    <div>
+      <i class="bi bi-exclamation-triangle me-2"></i>
+      {{ error }}
+    </div>
+    <button class="btn btn-light btn-sm" (click)="error=null">OK</button>
+  </div>
+
+  <!-- LOADING -->
+  <div *ngIf="loading" class="py-4 d-flex align-items-center gap-2">
+    <div class="spinner-border" role="status"></div>
+    <span>Chargement des offres...</span>
+  </div>
+
+  <!-- EMPTY -->
+  <div *ngIf="!loading && jobs.length === 0" class="text-muted py-4">
+    Aucune offre d’emploi disponible.
+  </div>
+
+  <!-- TABLE -->
+  <div class="card shadow-sm" *ngIf="!loading && jobs.length > 0">
+    <div class="card-body table-responsive">
+      <table class="table table-hover align-middle">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Position</th>
+            <th>Contract</th>
+            <th>Status</th>
+            <th>Deadline</th>
+            <th>Created</th>
+            <th class="text-end">Actions</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr *ngFor="let job of jobs">
+            <td class="text-muted">#{{ job.id }}</td>
+
+            <td class="fw-semibold">
+              {{ job.position }}
+            </td>
+
+            <td>
+              <span class="badge text-bg-light">
+                {{ job.contractType }}
+              </span>
+            </td>
+
+            <td>
+              <span
+                class="badge"
+                [ngClass]="badgeClass(job.status)">
+                {{ job.status }}
+              </span>
+            </td>
+
+            <td>
+              <span *ngIf="job.deadline; else noDeadline">
+                {{ job.deadline | date:'mediumDate' }}
+              </span>
+              <ng-template #noDeadline>
+                <span class="text-muted">—</span>
+              </ng-template>
+            </td>
+
+            <td class="text-muted">
+              {{ job.createdAt | date:'short' }}
+            </td>
+
+            <td class="text-end">
+              <button
+                class="btn btn-outline-danger btn-sm"
+                *ngIf="job.status === 'OPEN'"
+                (click)="close(job)">
+                <i class="bi bi-x-circle me-1"></i>
+                Close
+              </button>
+
+              <span
+                *ngIf="job.status === 'CLOSED'"
+                class="text-muted small">
+                Closed
+              </span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="small text-muted mt-2">
+        Total: {{ jobs.length }} offre(s)
+      </div>
+    </div>
+  </div>
+</div>

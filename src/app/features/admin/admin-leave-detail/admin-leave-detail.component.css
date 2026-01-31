@@ -1,0 +1,54 @@
+/* Overlay */
+.decision-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  animation: fadeIn 0.3s ease;
+}
+
+/* Box */
+.decision-box {
+  background: white;
+  padding: 40px 60px;
+  border-radius: 14px;
+  text-align: center;
+  font-size: 28px;
+  font-weight: bold;
+  animation: scaleIn 0.4s ease;
+}
+
+.decision-box i {
+  font-size: 64px;
+  margin-bottom: 10px;
+}
+
+/* Approved */
+.approved .decision-box {
+  color: #198754;
+}
+
+/* Rejected */
+.rejected .decision-box {
+  color: #dc3545;
+}
+
+/* Animations */
+@keyframes scaleIn {
+  from {
+    transform: scale(0.6);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}

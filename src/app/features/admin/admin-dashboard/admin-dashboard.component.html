@@ -1,0 +1,352 @@
+<div class="page">
+  <!-- HEADER / NAVBAR -->
+  <header class="topbar shadow-sm">
+    <div class="left">
+      <div class="brand">
+        <span class="brand-icon"><i class="bi bi-shield-lock"></i></span>
+        <div>
+          <div class="brand-title">Mini ERP</div>
+          <div class="brand-subtitle">Admin Dashboard</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="right">
+      <div class="user-chip">
+        <i class="bi bi-person-circle me-2"></i>
+        <div class="d-flex flex-column">
+          <span class="fw-semibold">{{ user?.firstName }} {{ user?.lastName }}</span>
+          <span class="small text-muted">{{ user?.email }}</span>
+        </div>
+      </div>
+
+      <div class="actions">
+          <a class="btn btn-outline-primary btn-sm" routerLink="/admin/employees">
+    <i class="bi bi-people"></i>
+    Employees
+  </a>
+         <a class="btn btn-primary btn-sm" routerLink="/admin/employees/new">
+    <i class="bi bi-person-plus"></i>
+    Create Employee
+  </a>
+        <button class="btn btn-outline-secondary btn-sm" (click)="load()">
+          <i class="bi bi-arrow-repeat"></i>
+          Refresh
+        </button>
+
+        <button class="btn btn-outline-danger btn-sm" (click)="logout()">
+          <i class="bi bi-box-arrow-right"></i>
+          Logout
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- CONTENT -->
+  <main class="container-fluid content">
+    <div *ngIf="loading" class="p-4">
+      <div class="d-flex align-items-center gap-2">
+        <div class="spinner-border" role="status"></div>
+        <span>Chargement du dashboard...</span>
+      </div>
+    </div>
+
+    <div *ngIf="error" class="p-4">
+      <div class="alert alert-danger d-flex align-items-center justify-content-between">
+        <div>
+          <i class="bi bi-exclamation-triangle me-2"></i>
+          {{ error }}
+        </div>
+        <button class="btn btn-light btn-sm" (click)="load()">Réessayer</button>
+      </div>
+    </div>
+
+    <ng-container *ngIf="!loading && !error && stats">
+      <!-- KPI CARDS -->
+      <div class="row g-3 mb-3">
+        <div class="col-12 col-md-6 col-xl-3">
+          <div class="kpi card shadow-sm">
+            <div class="card-body">
+              <div class="kpi-top">
+                <span class="kpi-icon bg-primary-subtle text-primary">
+                  <i class="bi bi-people"></i>
+                </span>
+                <span class="kpi-label">Total employés</span>
+              </div>
+              <div class="kpi-value">{{ stats.totalEmployees }}</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-12 col-md-6 col-xl-3">
+          <div class="kpi card shadow-sm">
+            <div class="card-body">
+              <div class="kpi-top">
+                <span class="kpi-icon bg-warning-subtle text-warning">
+                  <i class="bi bi-hourglass-split"></i>
+                </span>
+                <span class="kpi-label">Congés en attente</span>
+              </div>
+              <div class="kpi-value">{{ stats.leaves.pending }}</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-12 col-md-6 col-xl-3">
+          <div class="kpi card shadow-sm">
+            <div class="card-body">
+              <div class="kpi-top">
+                <span class="kpi-icon bg-success-subtle text-success">
+                  <i class="bi bi-file-earmark-text"></i>
+                </span>
+                <span class="kpi-label">Candidatures</span>
+              </div>
+              <div class="kpi-value">{{ stats.applicationsReceived }}</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-12 col-md-6 col-xl-3">
+          <div class="kpi card shadow-sm">
+            <div class="card-body">
+              <div class="kpi-top">
+                <span class="kpi-icon bg-info-subtle text-info">
+                  <i class="bi bi-calendar-event"></i>
+                </span>
+                <span class="kpi-label">Meetings à venir</span>
+              </div>
+              <div class="kpi-value">{{ stats.upcomingMeetings }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- QUICK ACTIONS -->
+<div class="row g-3 mb-3">
+  <div class="col-12 col-md-6 col-xl-3">
+    <a
+      routerLink="/admin/applications"
+      class="card shadow-sm text-decoration-none shortcut-card"
+    >
+      <div class="card-body d-flex align-items-center gap-3">
+        <div class="shortcut-icon bg-primary-subtle text-primary">
+          <i class="bi bi-file-earmark-person"></i>
+        </div>
+        <div>
+          <div class="fw-semibold">Applications</div>
+          <div class="small text-muted">
+            Gérer les candidatures
+          </div>
+        </div>
+      </div>
+    </a>
+  </div>
+
+  <div class="col-12 col-md-6 col-xl-3">
+    <a
+      routerLink="/admin/jobs"
+      class="card shadow-sm text-decoration-none shortcut-card"
+    >
+      <div class="card-body d-flex align-items-center gap-3">
+        <div class="shortcut-icon bg-success-subtle text-success">
+          <i class="bi bi-briefcase"></i>
+        </div>
+        <div>
+          <div class="fw-semibold">Job Offers</div>
+          <div class="small text-muted">
+            Offres d’emploi
+          </div>
+        </div>
+      </div>
+    </a>
+  </div>
+</div>
+
+      <!-- QUICK ACTIONS -->
+<div class="row g-3 mb-3">
+  <div class="col-12">
+    <div class="card shadow-sm">
+      <div class="card-header bg-white fw-semibold">
+        <i class="bi bi-lightning-charge me-2"></i>
+        Quick Actions
+      </div>
+
+      <div class="card-body">
+        <div class="row g-3">
+
+          <!-- JOB OFFERS -->
+          <div class="col-12 col-md-6 col-xl-3">
+            <a
+              routerLink="/admin/jobs"
+              class="quick-card text-decoration-none">
+              <div class="icon bg-primary-subtle text-primary">
+                <i class="bi bi-briefcase"></i>
+              </div>
+              <div class="title">Job Offers</div>
+              <div class="subtitle">Manage job listings</div>
+            </a>
+          </div>
+
+          <!-- CREATE JOB -->
+          <div class="col-12 col-md-6 col-xl-3">
+            <a
+              routerLink="/admin/jobs/new"
+              class="quick-card text-decoration-none">
+              <div class="icon bg-success-subtle text-success">
+                <i class="bi bi-plus-circle"></i>
+              </div>
+              <div class="title">Create Job</div>
+              <div class="subtitle">Add new offer</div>
+            </a>
+          </div>
+
+          <!-- EMPLOYEES -->
+          <div class="col-12 col-md-6 col-xl-3">
+            <a
+              routerLink="/admin/employees"
+              class="quick-card text-decoration-none">
+              <div class="icon bg-info-subtle text-info">
+                <i class="bi bi-people"></i>
+              </div>
+              <div class="title">Employees</div>
+              <div class="subtitle">Manage staff</div>
+            </a>
+          </div>
+
+          <!-- LEAVES -->
+          <div class="col-12 col-md-6 col-xl-3">
+            <a
+              routerLink="/admin/leaves"
+              class="quick-card text-decoration-none">
+              <div class="icon bg-warning-subtle text-warning">
+                <i class="bi bi-airplane"></i>
+              </div>
+              <div class="title">Leaves</div>
+              <div class="subtitle">Approve requests</div>
+            </a>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 🔔 ADMIN NOTIFICATIONS -->
+<div class="row g-3 mb-3">
+  <div class="col-12">
+    <div class="card shadow-sm">
+      <div class="card-header bg-white d-flex justify-content-between align-items-center">
+        <div class="fw-semibold">
+          <i class="bi bi-bell me-2"></i>
+          Notifications
+        </div>
+
+        <a routerLink="/admin/leaves" class="btn btn-link btn-sm">
+          Voir tout
+        </a>
+      </div>
+
+      <div class="card-body">
+        <div *ngIf="notificationsLoading" class="text-muted">
+          Chargement des notifications...
+        </div>
+
+        <div *ngIf="!notificationsLoading && notifications.length === 0" class="text-muted">
+          Aucune nouvelle notification.
+        </div>
+
+        <ul class="list-group list-group-flush" *ngIf="notifications.length > 0">
+          <li
+            class="list-group-item d-flex justify-content-between align-items-start"
+            *ngFor="let n of notifications">
+            
+            <div>
+              <div class="fw-semibold">{{ n.message }}</div>
+              <div class="small text-muted">
+                {{ n.createdAt | date:'short' }}
+              </div>
+            </div>
+
+            <a [routerLink]="n.link" class="btn btn-outline-primary btn-sm">
+              Voir
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+      <!-- DETAILS -->
+      <div class="row g-3">
+        <!-- Employees by position -->
+        <div class="col-12 col-lg-7">
+          <div class="card shadow-sm">
+            <div class="card-header bg-white d-flex align-items-center justify-content-between">
+              <div class="fw-semibold">
+                <i class="bi bi-diagram-3 me-2"></i> Employés par poste
+              </div>
+              <span class="badge text-bg-light">{{ stats.employeesByPosition.length }} postes</span>
+            </div>
+
+            <div class="card-body">
+              <div *ngIf="stats.employeesByPosition.length === 0" class="text-muted">
+                Aucun employé trouvé.
+              </div>
+
+              <div class="position-list" *ngIf="stats.employeesByPosition.length > 0">
+                <div class="position-row" *ngFor="let item of stats.employeesByPosition">
+                  <div class="position-name">{{ item.position }}</div>
+                  <div class="position-bar">
+                    <div class="position-bar-fill" [style.width.%]="(item.count / stats.totalEmployees) * 100"></div>
+                  </div>
+                  <div class="position-count">{{ item.count }}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Leaves summary -->
+        <div class="col-12 col-lg-5">
+          <div class="card shadow-sm">
+            <div class="card-header bg-white d-flex align-items-center justify-content-between">
+  <div class="fw-semibold">
+    <i class="bi bi-airplane me-2"></i> Congés (résumé)
+  </div>
+
+  <a
+    routerLink="/admin/leaves"
+    class="btn btn-outline-primary btn-sm">
+    <i class="bi bi-eye"></i>
+    View all
+  </a>
+</div>
+
+
+            <div class="card-body">
+              <div class="leave-grid">
+                <div class="leave-box">
+                  <div class="leave-label text-warning">Pending</div>
+                  <div class="leave-value">{{ stats.leaves.pending }}</div>
+                </div>
+                <div class="leave-box">
+                  <div class="leave-label text-success">Approved</div>
+                  <div class="leave-value">{{ stats.leaves.approved }}</div>
+                </div>
+                <div class="leave-box">
+                  <div class="leave-label text-danger">Rejected</div>
+                  <div class="leave-value">{{ stats.leaves.rejected }}</div>
+                </div>
+              </div>
+
+              <div class="mt-3 small text-muted">
+                (Les meetings seront ajoutés plus tard côté backend)
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+  </main>
+</div>

@@ -1,0 +1,98 @@
+<div class="auth-page">
+  <div class="auth-card shadow-sm">
+    <div class="auth-header">
+      <div class="brand">
+        <div class="brand-icon">
+          <i class="bi bi-building"></i>
+        </div>
+        <div>
+          <div class="brand-title">Mini ERP</div>
+          <div class="brand-subtitle">Connecte-toi à ton espace</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="auth-body">
+      <div *ngIf="error" class="alert alert-danger d-flex align-items-center" role="alert">
+        <i class="bi bi-exclamation-triangle me-2"></i>
+        <div>{{ error }}</div>
+      </div>
+
+      <form [formGroup]="form" (ngSubmit)="submit()">
+        <div class="mb-3">
+          <label class="form-label">Email</label>
+          <div class="input-group">
+            <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+            <input
+              type="email"
+              class="form-control"
+              placeholder="name@company.com"
+              formControlName="email"
+              [class.is-invalid]="email?.touched && email?.invalid"
+              autocomplete="email"
+            />
+            <div class="invalid-feedback" *ngIf="email?.touched && email?.errors">
+              <span *ngIf="email?.errors?.['required']">Email obligatoire.</span>
+              <span *ngIf="email?.errors?.['email']">Format email invalide.</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="mb-2">
+          <label class="form-label d-flex justify-content-between align-items-center">
+            <span>Mot de passe</span>
+            <a class="link-secondary small text-decoration-none" routerLink="/forgot-password">
+              Mot de passe oublié ?
+            </a>
+          </label>
+
+          <div class="input-group">
+            <span class="input-group-text"><i class="bi bi-shield-lock"></i></span>
+            <input
+              [type]="showPassword ? 'text' : 'password'"
+              class="form-control"
+              placeholder="••••••••"
+              formControlName="password"
+              [class.is-invalid]="password?.touched && password?.invalid"
+              autocomplete="current-password"
+            />
+            <button
+              type="button"
+              class="btn btn-outline-secondary"
+              (click)="showPassword = !showPassword"
+              aria-label="toggle password"
+            >
+              <i class="bi" [ngClass]="showPassword ? 'bi-eye-slash' : 'bi-eye'"></i>
+            </button>
+
+            <div class="invalid-feedback" *ngIf="password?.touched && password?.errors">
+              <span *ngIf="password?.errors?.['required']">Mot de passe obligatoire.</span>
+              <span *ngIf="password?.errors?.['minlength']">Minimum 6 caractères.</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="d-grid mt-4">
+          <button class="btn btn-primary btn-lg" type="submit" [disabled]="loading">
+            <span *ngIf="!loading" class="d-inline-flex align-items-center justify-content-center gap-2">
+              <i class="bi bi-box-arrow-in-right"></i>
+              Se connecter
+            </span>
+            <span *ngIf="loading" class="d-inline-flex align-items-center justify-content-center gap-2">
+              <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
+              Connexion...
+            </span>
+          </button>
+        </div>
+
+        <div class="mt-3 text-center small text-muted">
+          Utilise ton compte entreprise pour accéder à l’application.
+        </div>
+      </form>
+    </div>
+
+    <div class="auth-footer">
+      <span class="text-muted small">© {{  year }} Mini ERP</span>
+    </div>
+  </div>
+</div>
