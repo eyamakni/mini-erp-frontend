@@ -1,0 +1,88 @@
+<div class="page">
+  <div class="topbar">
+    <div class="brand">
+      <div class="brand-icon"><i class="bi bi-people"></i></div>
+      <div>
+        <div class="brand-title">Employee</div>
+        <div class="brand-subtitle">Meetings</div>
+      </div>
+    </div>
+
+    <div class="actions">
+      <a class="btn btn-outline-success btn-sm" routerLink="/employee/dashboard">
+        <i class="bi bi-arrow-left"></i> Dashboard
+      </a>
+      <a class="btn btn-outline-success btn-sm" routerLink="/employee/leaves">
+        <i class="bi bi-calendar2-check"></i> Leaves
+      </a>
+      <a class="btn btn-success btn-sm" routerLink="/employee/meetings/new">
+  <i class="bi bi-plus-lg"></i> Create
+</a>
+
+
+      <button class="btn btn-outline-secondary btn-sm" (click)="loadMeetings()">
+        <i class="bi bi-arrow-clockwise"></i>
+      </button>
+    </div>
+  </div>
+
+  <div class="content container">
+    <div *ngIf="successMsg" class="alert alert-success">{{ successMsg }}</div>
+    <div *ngIf="errorMsg" class="alert alert-danger">{{ errorMsg }}</div>
+
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h6 class="fw-bold mb-0">My meetings</h6>
+          <span class="text-muted small">{{ meetings.length }} meeting(s)</span>
+        </div>
+
+        <div *ngIf="loading" class="text-muted">Loading...</div>
+
+        <div *ngIf="!loading && meetings.length === 0" class="text-muted">
+          No meetings yet.
+        </div>
+
+        <div class="list-group" *ngIf="!loading && meetings.length > 0">
+          <div class="list-group-item" *ngFor="let m of meetings">
+            <div class="d-flex justify-content-between align-items-start gap-3">
+              <div class="w-100">
+                <div class="d-flex justify-content-between">
+                  <div class="fw-semibold">{{ m.title }}</div>
+                  <div class="text-muted small">
+                    {{ m.startAt | date:'medium' }}
+                  </div>
+                </div>
+
+                <div class="text-muted small mt-1">
+                  Duration: {{ m.durationMinutes }} min • Ends: {{ endAt(m) | date:'shortTime' }}
+                </div>
+
+                <div class="mt-2 small" *ngIf="m.description">
+                  {{ m.description }}
+                </div>
+
+                <div class="mt-2 small text-muted" *ngIf="m.participants?.length">
+                  Participants: {{ m.participants.length }}
+                </div>
+              </div>
+
+              <div class="btns">
+                <button
+                  class="btn btn-outline-danger btn-sm"
+                  (click)="cancelMeeting(m.id)"
+                  [disabled]="cancelingId === m.id"
+                >
+                  <span *ngIf="cancelingId !== m.id"><i class="bi bi-x-circle"></i> Cancel</span>
+                  <span *ngIf="cancelingId === m.id">Cancelling...</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</div>

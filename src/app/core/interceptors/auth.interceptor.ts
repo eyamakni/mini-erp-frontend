@@ -6,7 +6,6 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const storage = inject(TokenStorageService);
   const token = storage.getAccessToken();
 
-  // Ne pas ajouter token sur login/forgot/reset
   const isAuthEndpoint =
     req.url.includes('/auth/login') ||
     req.url.includes('/auth/forgot-password') ||

@@ -1,32 +1,159 @@
-<div class="dashboard-page">
-  <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-    <div class="container-fluid">
-      <span class="navbar-brand d-flex align-items-center gap-2">
-        <i class="bi bi-person-workspace"></i>
-        Employee Dashboard
-      </span>
-
-      <div class="ms-auto d-flex align-items-center gap-3 text-white">
-        <span class="fw-semibold">
-          {{ user?.firstName }} {{ user?.lastName }}
-        </span>
-
-        <button class="btn btn-outline-light btn-sm" (click)="logout()">
-          <i class="bi bi-box-arrow-right"></i>
-          Logout
-        </button>
+<div class="page">
+  <div class="topbar">
+    <div class="brand">
+      <div class="brand-icon"><i class="bi bi-person-workspace"></i></div>
+      <div>
+        <div class="brand-title">Employee</div>
+        <div class="brand-subtitle">Dashboard</div>
       </div>
     </div>
-  </nav>
 
-  <div class="container py-4">
-    <div class="card shadow-sm">
-      <div class="card-body">
-        <h4 class="mb-2">Bienvenue 👋</h4>
-        <p class="text-muted mb-0">
-          Ceci est un dashboard temporaire pour tester l’authentification côté employé.
-        </p>
+    <div class="right">
+      <div class="user-chip">
+        <div class="fw-semibold">{{ user?.firstName }} {{ user?.lastName }}</div>
+        <div class="text-muted small">{{ user?.email }}</div>
+      </div>
+
+      <div class="actions">
+        <a class="btn btn-outline-primary btn-sm" routerLink="/employee/leaves">Leaves</a>
+        <a class="btn btn-outline-primary btn-sm" routerLink="/employee/meetings">Meetings</a>
+        <button class="btn btn-outline-danger btn-sm" (click)="logout()">Logout</button>
       </div>
     </div>
+  </div>
+
+  <div class="content container">
+    <div *ngIf="loading" class="text-muted">Loading...</div>
+
+    <ng-container *ngIf="!loading && dashboard">
+      <!-- KPI ROW -->
+      <div class="row g-3">
+        <div class="col-md-3">
+          <div class="card kpi shadow-sm">
+            <div class="card-body">
+              <div class="kpi-top">
+                <div class="kpi-icon bg-light"><i class="bi bi-clipboard-check"></i></div>
+                <div class="kpi-label">Total leave requests</div>
+              </div>
+              <div class="kpi-value">{{ dashboard.leaveRequestsCount }}</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-3">
+          <div class="card kpi shadow-sm">
+            <div class="card-body">
+              <div class="kpi-top">
+                <div class="kpi-icon bg-light"><i class="bi bi-hourglass-split"></i></div>
+                <div class="kpi-label">Pending</div>
+              </div>
+              <div class="kpi-value">{{ dashboard.leaveRequestsByStatus?.pending }}</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-3">
+          <div class="card kpi shadow-sm">
+            <div class="card-body">
+              <div class="kpi-top">
+                <div class="kpi-icon bg-light"><i class="bi bi-check2-circle"></i></div>
+                <div class="kpi-label">Approved</div>
+              </div>
+              <div class="kpi-value">{{ dashboard.leaveRequestsByStatus?.approved }}</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-3">
+          <div class="card kpi shadow-sm">
+            <div class="card-body">
+              <div class="kpi-top">
+                <div class="kpi-icon bg-light"><i class="bi bi-calendar-event"></i></div>
+                <div class="kpi-label">Upcoming meetings</div>
+              </div>
+              <div class="kpi-value">{{ dashboard.upcomingMeetingsCount }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CHARTS ROW -->
+      <div class="row g-3 mt-1">
+        <!-- Leave chart -->
+        <div class="col-lg-4">
+          <div class="card shadow-sm h-100">
+            <div class="card-body">
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <h6 class="fw-bold mb-0">Leave status</h6>
+                <span class="text-muted small">{{ dashboard.leaveRequestsCount }} total</span>
+              </div>
+
+              <div class="chart-box">
+                <canvas id="leaveChart"></canvas>
+              </div>
+
+              <div class="small text-muted mt-2">
+                Pending / Approved / Rejected
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-lg-8">
+          <div class="card shadow-sm h-100">
+            <div class="card-body">
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <h6 class="fw-bold mb-0">Meetings next 7 days</h6>
+                <span class="text-muted small">{{ dashboard.upcomingMeetingsCount }} upcoming</span>
+              </div>
+
+              <div class="chart-box">
+                <canvas id="meetingsChart"></canvas>
+              </div>
+
+              <div class="small text-muted mt-2">
+                Count of upcoming meetings by day (from today)
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row g-3 mt-1">
+        <div class="col-lg-8">
+          <div class="card shadow-sm">
+            <div class="card-body">
+              <h6 class="fw-bold mb-3">Next meetings</h6>
+
+              <div *ngIf="dashboard.upcomingMeetings?.length === 0" class="text-muted">
+                No upcoming meetings.
+              </div>
+
+              <div class="list-group" *ngIf="dashboard.upcomingMeetings?.length > 0">
+                <div class="list-group-item" *ngFor="let m of dashboard.upcomingMeetings">
+                  <div class="d-flex justify-content-between">
+                    <div class="fw-semibold">{{ m.title }}</div>
+                    <div class="text-muted small">{{ m.startAt | date:'medium' }}</div>
+                  </div>
+                  <div class="text-muted small">Duration: {{ m.durationMinutes }} min</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-lg-4">
+          <div class="card shadow-sm">
+            <div class="card-body">
+              <h6 class="fw-bold mb-2">Shortcuts</h6>
+              <div class="d-grid gap-2">
+                <a class="btn btn-primary" routerLink="/employee/leaves">Request leave</a>
+                <a class="btn btn-outline-primary" routerLink="/employee/meetings">My meetings</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </ng-container>
   </div>
 </div>

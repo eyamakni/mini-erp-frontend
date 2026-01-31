@@ -1,0 +1,122 @@
+<div class="page">
+  <div class="topbar">
+    <div class="brand">
+      <div class="brand-icon"><i class="bi bi-calendar2-check"></i></div>
+      <div>
+        <div class="brand-title">Employee</div>
+        <div class="brand-subtitle">Leaves</div>
+      </div>
+    </div>
+
+    <div class="actions">
+      <a class="btn btn-outline-success btn-sm" routerLink="/employee/dashboard">
+        <i class="bi bi-arrow-left"></i> Dashboard
+      </a>
+      <a class="btn btn-outline-success btn-sm" routerLink="/employee/meetings">
+        <i class="bi bi-people"></i> Meetings
+      </a>
+    </div>
+  </div>
+
+  <div class="content container">
+    <!-- alerts -->
+    <div *ngIf="successMsg" class="alert alert-success">{{ successMsg }}</div>
+    <div *ngIf="errorMsg" class="alert alert-danger">{{ errorMsg }}</div>
+
+    <div class="row g-3">
+      <!-- Request form -->
+      <div class="col-lg-5">
+        <div class="card shadow-sm">
+          <div class="card-body">
+            <h6 class="fw-bold mb-3">Request a leave</h6>
+
+            <div class="mb-3">
+              <label class="form-label">Type</label>
+              <select class="form-select" [(ngModel)]="form.type" name="type">
+                <option value="ANNUAL">Annual</option>
+                <option value="SICK">Sick</option>
+                <option value="OTHER">Other</option>
+              </select>
+            </div>
+
+            <div class="row g-2 mb-3">
+              <div class="col-md-6">
+                <label class="form-label">Start date</label>
+                <input class="form-control" type="date" [(ngModel)]="form.startDate" name="startDate" />
+              </div>
+
+              <div class="col-md-6">
+                <label class="form-label">End date</label>
+                <input class="form-control" type="date" [(ngModel)]="form.endDate" name="endDate" />
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Reason (optional)</label>
+              <textarea class="form-control" rows="3" [(ngModel)]="form.reason" name="reason"
+                placeholder="Example: family issue, doctor appointment..."></textarea>
+            </div>
+
+            <button class="btn btn-success w-100" (click)="submit()" [disabled]="submitting">
+              <span *ngIf="!submitting"><i class="bi bi-send"></i> Submit</span>
+              <span *ngIf="submitting">Submitting...</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- History -->
+      <div class="col-lg-7">
+        <div class="card shadow-sm">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <h6 class="fw-bold mb-0">My leave requests</h6>
+              <button class="btn btn-outline-secondary btn-sm" (click)="loadLeaves()">
+                <i class="bi bi-arrow-clockwise"></i>
+              </button>
+            </div>
+
+            <div *ngIf="loading" class="text-muted">Loading...</div>
+
+            <div *ngIf="!loading && leaves.length === 0" class="text-muted">
+              No leave requests yet.
+            </div>
+
+            <div class="table-responsive" *ngIf="!loading && leaves.length > 0">
+              <table class="table align-middle">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Dates</th>
+                    <th>Status</th>
+                    <th class="text-end">Created</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let l of leaves">
+                    <td class="fw-semibold">{{ typeLabel(l.type) }}</td>
+                    <td>
+                      <div>{{ l.startDate }} → {{ l.endDate }}</div>
+                      <div class="small text-muted" *ngIf="l.reason">{{ l.reason }}</div>
+                      <div class="small text-muted" *ngIf="l.adminComment">
+                        <span class="fw-semibold">Admin:</span> {{ l.adminComment }}
+                      </div>
+                    </td>
+                    <td>
+                      <span [class]="statusBadgeClass(l.status)">{{ l.status }}</span>
+                    </td>
+                    <td class="text-end text-muted small">
+                      {{ l.createdAt | date:'short' }}
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>

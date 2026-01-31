@@ -2,9 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
 
-// =====================
-// TYPES
-// =====================
+
 export interface AdminDashboardStats {
   totalEmployees: number;
   employeesByPosition: { position: string; count: number }[];
@@ -49,7 +47,7 @@ export interface EmployeeItem {
   email: string;
   firstName: string;
   lastName: string;
-  role: UserRole; // normalement EMPLOYEE ici
+  role: UserRole; 
   isActive: boolean;
   mustChangePassword: boolean;
   position: EmployeePosition | null;
@@ -75,9 +73,7 @@ export interface DisableEmployeeDto {
   reason: string;
 }
 
-// =====================
-// SERVICE
-// =====================
+
 @Injectable({ providedIn: 'root' })
 export class AdminApiService {
   private base = `${environment.apiUrl}/admin`;
@@ -85,36 +81,25 @@ export class AdminApiService {
 
   constructor(private http: HttpClient) {}
 
-  // =====================
-  // DASHBOARD
-  // GET /admin/dashboard
-  // =====================
+
   getDashboard() {
     return this.http.get<AdminDashboardStats>(`${this.base}/dashboard`);
   }
 
-  // =====================
-  // EMPLOYEES
-  // =====================
-
-  // GET /admin/employees?q=&position=
   listEmployees(params?: { q?: string; position?: EmployeePosition | string }) {
     return this.http.get<EmployeeItem[]>(`${this.base}/employees`, {
       params: (params as any) ?? {},
     });
   }
 
-  // GET /admin/employees/:id
   getEmployee(id: number) {
     return this.http.get<EmployeeItem>(`${this.base}/employees/${id}`);
   }
 
-  // POST /admin/employees
   createEmployee(dto: CreateEmployeeDto) {
     return this.http.post<CreateEmployeeResponse>(`${this.base}/employees`, dto);
   }
 
-  // PATCH /admin/employees/:id/enable
   enableEmployee(id: number) {
     return this.http.patch<{ message: string; id: number }>(
       `${this.base}/employees/${id}/enable`,
@@ -122,7 +107,6 @@ export class AdminApiService {
     );
   }
 
-  // PATCH /admin/employees/:id/disable  body: { reason }
   disableEmployee(id: number, reason: string) {
     const body: DisableEmployeeDto = { reason };
     return this.http.patch<{ message: string; id: number }>(

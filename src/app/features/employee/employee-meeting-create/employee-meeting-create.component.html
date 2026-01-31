@@ -1,0 +1,94 @@
+<div class="page">
+  <div class="topbar">
+    <div class="brand">
+      <div class="brand-icon"><i class="bi bi-plus-circle"></i></div>
+      <div>
+        <div class="brand-title">Employee</div>
+        <div class="brand-subtitle">Create meeting</div>
+      </div>
+    </div>
+
+    <div class="actions">
+      <a class="btn btn-outline-success btn-sm" routerLink="/employee/meetings">
+        <i class="bi bi-arrow-left"></i> Back
+      </a>
+    </div>
+  </div>
+
+  <div class="content container">
+    <div *ngIf="successMsg" class="alert alert-success">{{ successMsg }}</div>
+    <div *ngIf="errorMsg" class="alert alert-danger">{{ errorMsg }}</div>
+
+    <div class="row g-3">
+      <!-- Form -->
+      <div class="col-lg-6">
+        <div class="card shadow-sm">
+          <div class="card-body">
+            <h6 class="fw-bold mb-3">Meeting details</h6>
+
+            <div class="mb-3">
+              <label class="form-label">Title *</label>
+              <input class="form-control" [(ngModel)]="title" name="title" placeholder="Example: Daily standup" />
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Description</label>
+              <textarea class="form-control" rows="3" [(ngModel)]="description" name="description"></textarea>
+            </div>
+
+            <div class="row g-2 mb-3">
+              <div class="col-md-7">
+                <label class="form-label">Start (date & time) *</label>
+                <input class="form-control" type="datetime-local" [(ngModel)]="startAtLocal" name="startAtLocal" />
+              </div>
+
+              <div class="col-md-5">
+                <label class="form-label">Duration (minutes) *</label>
+                <input class="form-control" type="number" min="5" step="1"
+                       [(ngModel)]="durationMinutes" name="durationMinutes" />
+              </div>
+            </div>
+
+            <button class="btn btn-success w-100" (click)="submit()" [disabled]="submitting">
+              <span *ngIf="!submitting"><i class="bi bi-check2-circle"></i> Create</span>
+              <span *ngIf="submitting">Creating...</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Participants -->
+      <div class="col-lg-6">
+        <div class="card shadow-sm">
+          <div class="card-body">
+            <h6 class="fw-bold mb-3">Participants</h6>
+
+            <div *ngIf="loadingUsers" class="text-muted">Loading employees...</div>
+
+            <div *ngIf="!loadingUsers && employees.length === 0" class="text-muted">
+              No employees found.
+            </div>
+
+            <div class="participants" *ngIf="!loadingUsers && employees.length > 0">
+              <label class="participant-row" *ngFor="let e of employees">
+                <div class="left">
+                  <div class="name">{{ e.firstName }} {{ e.lastName }}</div>
+                  <div class="meta text-muted small">
+                    {{ e.email }} <span *ngIf="e.position">• {{ e.position }}</span>
+                  </div>
+                </div>
+
+                <input class="form-check-input" type="checkbox"
+                       (change)="toggle(e.id, $any($event.target).checked)" />
+              </label>
+            </div>
+
+            <div class="small text-muted mt-2">
+              * You will be added automatically as participant.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

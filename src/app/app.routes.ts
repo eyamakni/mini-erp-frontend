@@ -3,9 +3,6 @@ import { authGuard } from './core/guards/auth.guard';
 import { adminGuard } from './core/guards/role.guard';
 export const routes: Routes = [
 
-  // =====================
-  // AUTH (public)
-  // =====================
   {
     path: 'login',
     loadComponent: () =>
@@ -19,9 +16,7 @@ export const routes: Routes = [
         .then(m => m.ForgotPasswordComponent),
   },
 
-  // =====================
-  // PASSWORD CHANGE (protected)
-  // =====================
+
   {
     path: 'change-password',
     canActivate: [authGuard],
@@ -44,9 +39,7 @@ export const routes: Routes = [
         .then(m => m.AdminJobsCreateComponent),
   },
 
-  // =====================
-  // EMPLOYEE
-  // =====================
+
   {
     path: 'employee/dashboard',
     canActivate: [authGuard],
@@ -54,6 +47,30 @@ export const routes: Routes = [
       import('./features/employee/employee-dashboard/employee-dashboard.component')
         .then(m => m.EmployeeDashboardComponent),
   },
+  {
+  path: 'employee/leaves',
+  canActivate: [authGuard],
+  loadComponent: () =>
+    import('./features/employee/employee-leaves/employee-leaves.component')
+      .then(m => m.EmployeeLeavesComponent),
+},
+{
+  path: 'employee/meetings',
+  canActivate: [authGuard],
+  loadComponent: () =>
+    import('./features/employee/employee-meetings/employee-meetings.component')
+      .then(m => m.EmployeeMeetingsComponent),
+},
+{
+  path: 'employee/meetings/new',
+  canActivate: [authGuard],
+  loadComponent: () =>
+    import('./features/employee/employee-meeting-create/employee-meeting-create.component')
+      .then(m => m.EmployeeMeetingCreateComponent),
+},
+
+
+
   {
   path: 'admin/employees/new',
   canActivate: [authGuard, adminGuard],
@@ -70,9 +87,6 @@ export const routes: Routes = [
 },
 
 
-  // =====================
-  // ADMIN
-  // =====================
   {
     path: 'admin/dashboard',
     canActivate: [authGuard, adminGuard],
@@ -123,9 +137,7 @@ export const routes: Routes = [
         .then(m => m.AdminLeaveDetailComponent),
   },
 
-  // =====================
-  // DEFAULT & FALLBACK
-  // =====================
+
   {
     path: '',
     redirectTo: 'login',

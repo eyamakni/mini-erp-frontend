@@ -37,9 +37,6 @@ export class ApplicationsApiService {
 
   constructor(private http: HttpClient) {}
 
-  // =====================
-  // ADMIN: LIST
-  // =====================
   listAdmin(params?: {
     jobOfferId?: number;
     status?: ApplicationStatus;
@@ -52,18 +49,13 @@ export class ApplicationsApiService {
     );
   }
 
-  // =====================
-  // ADMIN: DETAILS
-  // =====================
+
   getOneAdmin(id: number) {
     return this.http.get<JobApplicationDetail>(
       `${this.base}/admin/${id}`
     );
   }
 
-  // =====================
-  // ADMIN: UPDATE STATUS
-  // =====================
 updateStatus(
   id: number,
   dto: { status: ApplicationStatus; adminNotes?: string }
